@@ -1,18 +1,26 @@
 package com.mmyzd.llor;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.common.config.ConfigElement;
-import net.minecraftforge.fml.client.config.GuiConfig;
 
-public class GuiModConfig extends GuiConfig {
-	public GuiModConfig(GuiScreen parent) {
-		super(
-			parent,
-			new ConfigElement(LightLevelOverlayReloaded.instance.config.file.getCategory("general")).getChildElements(),
-			LightLevelOverlayReloaded.MODID,
-			false,
-			false,
-			GuiConfig.getAbridgedConfigPath(LightLevelOverlayReloaded.instance.config.file.toString())
-		);
+public class GuiModConfig extends GuiScreen {
+
+	private GuiButton USE_SKY_LIGHT_BUTTON;
+
+	public GuiModConfig() {
+
 	}
+
+	@Override
+	protected void initGui() {
+		USE_SKY_LIGHT_BUTTON = addButton(new GuiButton(0, this.width / 2 - 100, this.height / 2 - 100, ConfigManager.displayMode.toString()) {
+			public void onClick(double x, double y) {
+				ConfigManager.DisplayMode next = ConfigManager.displayMode.getNext();
+				ConfigManager.displayMode = next;
+				this.displayString = next.toString();
+			}
+		});
+
+	}
+
 }

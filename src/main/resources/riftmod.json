@@ -1,0 +1,11 @@
+{
+    "id": "llor",
+    "name": "LightLevelOverlayReloaded",
+    "authors": [
+        "bermudalocket", "mmyzd"
+    ],
+    "listeners": [
+        "com.mmyzd.llor.LightLevelOverlayReloaded",
+        "com.mmyzd.llor.MixinLoader"
+    ]
+}

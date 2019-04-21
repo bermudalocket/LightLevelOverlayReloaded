@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.mmyzd.llor.mixin",
+  "refmap": "mixins.llor.refmap.json",
+  "minVersion": "0.6",
+  "client": [
+    "MixinGameRenderer",
+    "MixinGuiKeyBindingList"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
