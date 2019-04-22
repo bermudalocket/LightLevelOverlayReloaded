@@ -27,6 +27,9 @@ public class MixinGuiKeyBindingList {
         } else if (this.keybinding == LightLevelOverlayReloaded.HOTKEY_CTRL) {
             this.btnChangeKeyBinding.displayString = "Ctrl+" + LightLevelOverlayReloaded.HOTKEY.func_197978_k();
             this.btnChangeKeyBinding.enabled = false;
+        }  else if (this.keybinding == LightLevelOverlayReloaded.HOTKEY_ALT) {
+            this.btnChangeKeyBinding.displayString = "Alt+" + LightLevelOverlayReloaded.HOTKEY.func_197978_k();
+            this.btnChangeKeyBinding.enabled = false;
         }
     }
 

@@ -21,7 +21,8 @@ public class MixinLoader implements InitializationListener, KeyBindingAdder {
         return new HashSet<>(Arrays.asList(
             LightLevelOverlayReloaded.HOTKEY,
             LightLevelOverlayReloaded.HOTKEY_SHIFT,
-            LightLevelOverlayReloaded.HOTKEY_CTRL
+            LightLevelOverlayReloaded.HOTKEY_CTRL,
+            LightLevelOverlayReloaded.HOTKEY_ALT
         ));
     }
 

@@ -14,6 +14,7 @@ import net.minecraft.world.chunk.Chunk;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.concurrent.CompletableFuture;
 
 public class OverlayPoller extends Thread {
 	
@@ -23,22 +24,20 @@ public class OverlayPoller extends Thread {
 		if (!LightLevelOverlayReloaded.INSTANCE.active) {
 			return;
 		}
-		int radius = 0;
 		int chunkRadius = updateChunkRadius();
-		radius = radius % chunkRadius + 1;
-		updateLightLevel(radius, chunkRadius);
+		CompletableFuture.runAsync(() -> updateLightLevel(chunkRadius));
 	}
 
 	public ArrayList<Overlay>[][] getOverlays() {
 		if (overlays == null) {
 			updateChunkRadius();
 		}
-		return overlays;
+		return overlays.clone();
 	}
 
 	@SuppressWarnings("unchecked")
 	private int updateChunkRadius() {
-		int size = ConfigManager.chunkRadius + 1;
+		int size = ConfigManager.chunkRadius;
 		if (overlays == null || overlays.length != size * 2 + 1) {
 			overlays = new ArrayList[size * 2 + 1][size * 2 + 1];
 			for (int i = 0; i < overlays.length; i++) {
@@ -65,7 +64,8 @@ public class OverlayPoller extends Thread {
 		return chunks;
 	}
 
-	private void updateLightLevel(int radius, int chunkRadius) {
+	@SuppressWarnings("unchecked")
+	private void updateLightLevel(int chunkRadius) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null) {
 			return;
@@ -75,13 +75,22 @@ public class OverlayPoller extends Thread {
 		int skyLightSub = world.calculateSkylightSubtracted(1.0f);
 		ConfigManager.DisplayMode displayMode = ConfigManager.displayMode;
 		boolean useSkyLight = ConfigManager.useSkyLight;
-
-		for (Chunk chunk : getChunksAroundPlayer(radius)) {
+		int size = ConfigManager.chunkRadius;
+		ArrayList<Overlay>[][] newLightmap = new ArrayList[size * 2 + 1][size * 2 + 1];
+		for (int i = 0; i < newLightmap.length; i++) {
+			for (int j = 0; j < newLightmap[i].length; j++) {
+				newLightmap[i][j] = new ArrayList<>();
+			}
+		}
+		for (Chunk chunk : getChunksAroundPlayer(chunkRadius)) {
 			ArrayList<Overlay> buffer = new ArrayList<>();
 			for (int offsetX = 0; offsetX < 16; offsetX++) {
 				for (int offsetZ = 0; offsetZ < 16; offsetZ++) {
 					int posX = (chunk.x << 4) + offsetX;
 					int posZ = (chunk.z << 4) + offsetZ;
+					if (Math.pow(mc.player.posX - posX, 2) + Math.pow(mc.player.posZ - posZ, 2) > ConfigManager.blockRenderDistance*ConfigManager.blockRenderDistance) {
+						continue;
+					}
 					int maxY = playerPosY + 4;
 					int minY = Math.max(playerPosY - 40, 0);
 					IBlockState curBlockState = chunk.getBlockState(offsetX, maxY, offsetZ);
@@ -132,8 +141,9 @@ public class OverlayPoller extends Thread {
 			int len = chunkRadius * 2 + 1;
 			int arrayX = (chunk.x % len + len) % len;
 			int arrayZ = (chunk.z % len + len) % len;
-			overlays[arrayX][arrayZ] = buffer;
+			newLightmap[arrayX][arrayZ] = buffer;
 		}
+		overlays = newLightmap;
 	}
 
 }

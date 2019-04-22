@@ -44,6 +44,7 @@ public class ConfigManager {
 	public static DisplayMode displayMode = DisplayMode.STANDARD;
 	public static int chunkRadius = 3;
 	public static int pollingInterval = 1000;
+	public static int blockRenderDistance = 32;
 
 	private final File CONFIG_FILE;
 

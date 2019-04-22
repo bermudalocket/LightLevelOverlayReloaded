@@ -32,6 +32,8 @@ public class LightLevelOverlayReloaded implements KeybindHandler {
 		GLFW.GLFW_KEY_UNKNOWN, "Light Level Overlay Reloaded");
 	public static final KeyBinding HOTKEY_CTRL = new KeyBinding("Display Mode",
 		GLFW.GLFW_KEY_UNKNOWN, "Light Level Overlay Reloaded");
+	public static final KeyBinding HOTKEY_ALT = new KeyBinding("Open Config",
+        GLFW.GLFW_KEY_UNKNOWN, "Light Level Overlay Reloaded");
 
 	public LightLevelOverlayReloaded() {
 		INSTANCE = this;
@@ -60,10 +62,16 @@ public class LightLevelOverlayReloaded implements KeybindHandler {
 				ConfigManager.useSkyLight = useSkyLight;
 				sendMessageToPlayer((useSkyLight ? "Block Light + Sky Light" : "Block Light Only"));
 			} else if (active && withCtrl && !withShift) {
-				ConfigManager.DisplayMode mode = ConfigManager.displayMode;
-				ConfigManager.displayMode = mode.getNext();
-				sendMessageToPlayer(ConfigManager.displayMode.toString());
-			} else if (!withShift && !withCtrl && !withAlt) {
+                ConfigManager.DisplayMode mode = ConfigManager.displayMode;
+                ConfigManager.displayMode = mode.getNext();
+                sendMessageToPlayer(ConfigManager.displayMode.toString());
+            } else if (withAlt && !withShift && !withCtrl) {
+                try {
+                    GuiModConfig.open();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (!withShift && !withCtrl && !withAlt) {
 				active = !active;
 				launchPoller();
 			}
@@ -90,20 +98,11 @@ public class LightLevelOverlayReloaded implements KeybindHandler {
 		}
 		EntityPlayerSP player = Minecraft.getInstance().player;
 		if (player != null) {
-			final float partialTicks = getPartialTicks();
+			final float partialTicks = Minecraft.getInstance().getRenderPartialTicks();
 			double x = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
 			double y = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
 			double z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
 			renderer.render(x, y, z, poller.getOverlays());
-		}
-	}
-
-	public static float getPartialTicks() {
-		try {
-			return Minecraft.getInstance().getRenderPartialTicks();
-		} catch (NullPointerException e) {
-			// not ready
-			return 0f;
 		}
 	}
 
